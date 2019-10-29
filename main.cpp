@@ -30,6 +30,7 @@ void parse_array(std::string *str) {
         remove(str);
         switch ((*str)[0]) {
         case '{':
+            (*str).erase(str->begin());
             parse_object(str);
             break;
         case ',':
@@ -56,9 +57,11 @@ void parse_object(std::string *str) {
         remove(str);
         switch ((*str)[0]) {
         case '{':
+            (*str).erase(str->begin());
             parse_object(str);
             break;
         case '[':
+            (*str).erase(str->begin());
             parse_array(str);
             break;
         case ':':
