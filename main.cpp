@@ -2,14 +2,15 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <stdlib.h>
 
-union json {
+/*union json {
     std::string str;
-    std::map<std::string, std::string> obj;
-    std::vector<std::string> ary;
+    std::map<std::string, union json> obj;
+    std::vector<union json> ary;
 
     json() {}
-};
+};*/
 
 void parse_value(std::string *str);
 void parse_array(std::string *str);
@@ -17,7 +18,7 @@ void parse_object(std::string *str);
 void parse_string(std::string *str);
 
 void remove(std::string *str) {
-    while ((*str)[0] == ' ' || (*str)[0] == '\n') {
+    while ((*str)[0] == ' ' || (*str)[0] == '\n' || (*str)[0] == '\t' || (*str)[0] == '\r') {
         (*str).erase(str->begin());
     }
 }
@@ -110,7 +111,7 @@ void parse_value(std::string *str) {
 
 int main() {
     std::string input;
-    FILE *fp = fopen("input.json", "r");
+    FILE *fp = fopen("sample.json", "r");
     int ch;
     while ((ch = fgetc(fp)) != EOF) {
         input += (char)ch;
