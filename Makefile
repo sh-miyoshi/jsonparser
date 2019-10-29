@@ -4,7 +4,7 @@ ifeq ($(OS),Windows_NT)
 else
   TARGET = a.out
 endif
-CXXFLAGS = -O2
+CXXFLAGS = -O2 -std=c++11
 SRCS = main.cpp
 OBJS := $(SRCS:.cpp=.o)
 

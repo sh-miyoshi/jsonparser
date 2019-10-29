@@ -4,13 +4,11 @@
 #include <vector>
 #include <stdlib.h>
 
-/*union json {
+union json {
     std::string str;
     std::map<std::string, union json> obj;
     std::vector<union json> ary;
-
-    json() {}
-};*/
+};
 
 void parse_value(std::string *str);
 void parse_array(std::string *str);
@@ -23,50 +21,56 @@ void remove(std::string *str) {
     }
 }
 
+char first_char(std::string *str) {
+    remove(str);
+    if(str->empty()){
+        // TODO(set json parse error)
+        puts("failed to parse json in first_char");
+        exit(1);
+    }
+    char res = (*str)[0];
+    (*str).erase(str->begin());
+    return res;
+}
+
 void parse_array(std::string *str) {
-    std::string val;
     int index = 0;
     while (!str->empty()) {
-        remove(str);
-        switch ((*str)[0]) {
+        char c = first_char(str);
+        switch (c) {
         case '{':
-            (*str).erase(str->begin());
+            printf("array value %d:\n", index);
             parse_object(str);
             break;
         case ',':
-            printf("value%d: %s\n", index, val.c_str());
-            val = "";
             index++;
             break;
         case '"':
+            printf("array value %d:\n", index);
+            parse_string(str);
             break;
         case ']':
-            printf("value%d: %s\n", index, val.c_str());
             return;
         default:
-            val += (*str)[0];
+            puts("maybe mistake");
             break;
         }
-        (*str).erase(str->begin());
     }
 }
 
 void parse_object(std::string *str) {
     std::string key;
     while (!str->empty()) {
-        remove(str);
-        switch ((*str)[0]) {
+        char c = first_char(str);
+        switch (c) {
         case '{':
-            (*str).erase(str->begin());
             parse_object(str);
             break;
         case '[':
-            (*str).erase(str->begin());
             parse_array(str);
             break;
         case ':':
-            printf("key: %s, ", key.c_str());
-            (*str).erase(str->begin());
+            printf("key: %s,\n", key.c_str());
             parse_value(str);
             break;
         case ',':
@@ -77,10 +81,9 @@ void parse_object(std::string *str) {
         case '}':
             return;
         default:
-            key += (*str)[0];
+            key += c;
             break;
         }
-        (*str).erase(str->begin());
     }
 }
 
@@ -92,22 +95,25 @@ void parse_string(std::string *str) {
         (*str).erase(str->begin());
     }
     printf("value: %s\n", res.c_str());
+    (*str).erase(str->begin());
 }
 
 void parse_value(std::string *str) {
-    remove(str);
-    switch ((*str)[0]) {
+    char c = first_char(str);
+    switch (c) {
     case '{':
-        (*str).erase(str->begin());
         parse_object(str);
         break;
     case '"':
-        (*str).erase(str->begin());
         parse_string(str);
         break;
     case '[':
-        (*str).erase(str->begin());
         parse_array(str);
+        break;
+    default:
+        // TODO(set json parse error)
+        puts("failed to parse json");
+        exit(1);
         break;
     }
 }
