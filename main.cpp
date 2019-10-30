@@ -8,12 +8,15 @@ union json {
     std::string str;
     std::map<std::string, union json> obj;
     std::vector<union json> ary;
+
+    json(){}
+    ~json(){}
 };
 
-void parse_value(std::string *str);
-void parse_array(std::string *str);
-void parse_object(std::string *str);
-void parse_string(std::string *str);
+void parse_value(union json *result, std::string *str);
+void parse_array(union json *result, std::string *str);
+void parse_object(union json *result, std::string *str);
+void parse_string(union json *result, std::string *str);
 
 void remove(std::string *str) {
     while ((*str)[0] == ' ' || (*str)[0] == '\n' || (*str)[0] == '\t' || (*str)[0] == '\r') {
@@ -33,21 +36,21 @@ char first_char(std::string *str) {
     return res;
 }
 
-void parse_array(std::string *str) {
+void parse_array(union json *result, std::string *str) {
     int index = 0;
     while (!str->empty()) {
         char c = first_char(str);
         switch (c) {
         case '{':
             printf("array value %d:\n", index);
-            parse_object(str);
+            parse_object(result, str);
             break;
         case ',':
             index++;
             break;
         case '"':
             printf("array value %d:\n", index);
-            parse_string(str);
+            parse_string(result, str);
             break;
         case ']':
             return;
@@ -58,20 +61,20 @@ void parse_array(std::string *str) {
     }
 }
 
-void parse_object(std::string *str) {
+void parse_object(union json *result, std::string *str) {
     std::string key;
     while (!str->empty()) {
         char c = first_char(str);
         switch (c) {
         case '{':
-            parse_object(str);
+            parse_object(result, str);
             break;
         case '[':
-            parse_array(str);
+            parse_array(result, str);
             break;
         case ':':
             printf("key: %s,\n", key.c_str());
-            parse_value(str);
+            parse_value(result, str);
             break;
         case ',':
             key = "";
@@ -87,7 +90,7 @@ void parse_object(std::string *str) {
     }
 }
 
-void parse_string(std::string *str) {
+void parse_string(union json *result, std::string *str) {
     std::string res;
     remove(str);
     while ((*str)[0] != '"') {
@@ -98,17 +101,17 @@ void parse_string(std::string *str) {
     (*str).erase(str->begin());
 }
 
-void parse_value(std::string *str) {
+void parse_value(union json *result, std::string *str) {
     char c = first_char(str);
     switch (c) {
     case '{':
-        parse_object(str);
+        parse_object(result, str);
         break;
     case '"':
-        parse_string(str);
+        parse_string(result, str);
         break;
     case '[':
-        parse_array(str);
+        parse_array(result, str);
         break;
     default:
         // TODO(set json parse error)
@@ -128,5 +131,6 @@ int main() {
     fclose(fp);
 
     //puts(input.c_str());
-    parse_value(&input);
+    union json result; 
+    parse_value(&result, &input);
 }
