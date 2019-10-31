@@ -53,13 +53,15 @@ union json *parse_array(std::string *str) {
             parse_string(str);
             break;
         case ']':
+            puts("parse_array is not implemented yet");
             return nullptr;
         default:
             puts("maybe mistake");
             break;
         }
     }
-    puts("parse_array is not implemented yet");
+    // TODO(set json parse error)
+    puts("failed to parse json in parse_array");
     exit(1);
     return nullptr;
 }
@@ -122,7 +124,7 @@ union json *parse_value(std::string *str) {
         return parse_array(str);
     default:
         // TODO(set json parse error)
-        puts("failed to parse json");
+        puts("failed to parse json in parse_value");
         exit(1);
         return nullptr;
     }
