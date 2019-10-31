@@ -6,17 +6,17 @@
 
 union json {
     std::string str;
-    std::map<std::string, union json> obj;
-    std::vector<union json> ary;
+    std::map<std::string, union json *> obj;
+    std::vector<union json *> ary;
 
     json(){}
     ~json(){}
 };
 
-void parse_value(union json *result, std::string *str);
-void parse_array(union json *result, std::string *str);
-void parse_object(union json *result, std::string *str);
-void parse_string(union json *result, std::string *str);
+union json *parse_value(std::string *str);
+union json *parse_array(std::string *str);
+union json *parse_object(std::string *str);
+union json *parse_string(std::string *str);
 
 void remove(std::string *str) {
     while ((*str)[0] == ' ' || (*str)[0] == '\n' || (*str)[0] == '\t' || (*str)[0] == '\r') {
@@ -36,45 +36,50 @@ char first_char(std::string *str) {
     return res;
 }
 
-void parse_array(union json *result, std::string *str) {
+union json *parse_array(std::string *str) {
     int index = 0;
     while (!str->empty()) {
         char c = first_char(str);
         switch (c) {
         case '{':
             printf("array value %d:\n", index);
-            parse_object(result, str);
+            parse_object(str);
             break;
         case ',':
             index++;
             break;
         case '"':
             printf("array value %d:\n", index);
-            parse_string(result, str);
+            parse_string(str);
             break;
         case ']':
-            return;
+            return nullptr;
         default:
             puts("maybe mistake");
             break;
         }
     }
+    puts("parse_array is not implemented yet");
+    exit(1);
+    return nullptr;
 }
 
-void parse_object(union json *result, std::string *str) {
+union json *parse_object(std::string *str) {
+    union json *res=new union json();
     std::string key;
     while (!str->empty()) {
         char c = first_char(str);
         switch (c) {
         case '{':
-            parse_object(result, str);
+            parse_object(str);
             break;
         case '[':
-            parse_array(result, str);
+            parse_array(str);
             break;
         case ':':
             printf("key: %s,\n", key.c_str());
-            parse_value(result, str);
+            res->obj=std::map<std::string, union json *>();
+            res->obj.insert(std::make_pair(key, parse_value(str)));
             break;
         case ',':
             key = "";
@@ -82,42 +87,44 @@ void parse_object(union json *result, std::string *str) {
         case '"':
             break;
         case '}':
-            return;
+            return res;
         default:
             key += c;
             break;
         }
     }
+    // TODO(set json parse error)
+    puts("failed to parse json in parse_object");
+    exit(1);
+    return nullptr;
 }
 
-void parse_string(union json *result, std::string *str) {
-    std::string res;
+union json *parse_string(std::string *str) {
+    union json *res = new union json();
     remove(str);
     while ((*str)[0] != '"') {
-        res += (*str)[0];
+        res->str += (*str)[0];
         (*str).erase(str->begin());
     }
-    printf("value: %s\n", res.c_str());
+    printf("value: %s\n", res->str.c_str());
     (*str).erase(str->begin());
+    return res;
 }
 
-void parse_value(union json *result, std::string *str) {
+union json *parse_value(std::string *str) {
     char c = first_char(str);
     switch (c) {
     case '{':
-        parse_object(result, str);
-        break;
+        return parse_object(str);
     case '"':
-        parse_string(result, str);
-        break;
+        return parse_string(str);
     case '[':
-        parse_array(result, str);
-        break;
+        return parse_array(str);
     default:
         // TODO(set json parse error)
         puts("failed to parse json");
         exit(1);
-        break;
+        return nullptr;
     }
 }
 
@@ -132,5 +139,5 @@ int main() {
 
     //puts(input.c_str());
     union json result; 
-    parse_value(&result, &input);
+    parse_value(&input);
 }
