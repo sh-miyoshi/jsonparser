@@ -23,6 +23,7 @@ class Value {
     Value() : type(eTYPE_NULL) {}
     ~Value() {}
 
+    // Setter
     void SetObject(std::string key, Value *value) {
         if (type == eTYPE_NULL) {
             type = eTYPE_OBJECT;
@@ -48,7 +49,23 @@ class Value {
         }
     }
 
-    // TODO(Get)
+    // Getter
+    Type GetType() const {
+        return type;
+    }
+
+    std::string GetString() {
+        // TODO(check type)
+        return str;
+    }
+    std::map<std::string, Value *> GetObject() {
+        // TODO(check type)
+        return obj;
+    }
+    std::vector<Value *> GetArray() {
+        // TODO(check type)
+        return ary;
+    }
 };
 
 Value *parse_value(std::string *str);
