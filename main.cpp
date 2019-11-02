@@ -38,24 +38,22 @@ char first_char(std::string *str) {
 }
 
 Value *parse_array(std::string *str) {
-    int index = 0;
+    Value *res = new Value();
     while (!str->empty()) {
         char c = first_char(str);
         switch (c) {
         case '{':
-            printf("array value %d:\n", index);
-            parse_object(str);
+            printf("array value %d:\n", res->ary.size());
+            res->ary.push_back(parse_object(str));
             break;
         case ',':
-            index++;
             break;
         case '"':
-            printf("array value %d:\n", index);
-            parse_string(str);
+            printf("array value %d:\n", res->ary.size());
+            res->ary.push_back(parse_string(str));
             break;
         case ']':
-            puts("parse_array is not implemented yet");
-            return nullptr;
+            return res;
         default:
             puts("maybe mistake");
             break;
@@ -109,14 +107,13 @@ Value *parse_string(std::string *str) {
         res->str += (*str)[0];
         (*str).erase(str->begin());
     }
-    printf("value: %s\n", res->str.c_str());
+    printf("string value: %s\n", res->str.c_str());
     (*str).erase(str->begin());
     return res;
 }
 
 Value *parse_value(std::string *str) {
     char c = first_char(str);
-    printf("val: %c\n", c);
     switch (c) {
     case '{':
         return parse_object(str);
