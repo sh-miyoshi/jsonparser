@@ -6,12 +6,49 @@
 
 class Value {
   public:
+    enum Type {
+        eTYPE_NULL,
+        eTYPE_STRING,
+        eTYPE_OBJECT,
+        eTYPE_ARRAY
+    };
+
+  private:
+    Type type;
     std::string str;
     std::map<std::string, Value *> obj;
     std::vector<Value *> ary;
 
-    Value() {}
+  public:
+    Value() : type(eTYPE_NULL) {}
     ~Value() {}
+
+    void SetObject(std::string key, Value *value) {
+        if (type == eTYPE_NULL) {
+            type = eTYPE_OBJECT;
+            obj.insert(std::make_pair(key, value));
+        } else {
+            // TODO(set error)
+        }
+    }
+    void SetArray(Value *value) {
+        if (type == eTYPE_NULL) {
+            type = eTYPE_ARRAY;
+            ary.push_back(value);
+        } else {
+            // TODO(set error)
+        }
+    }
+    void SetString(std::string value) {
+        if (type == eTYPE_NULL) {
+            type = eTYPE_STRING;
+            str = value;
+        } else {
+            // TODO(set error)
+        }
+    }
+
+    // TODO(Get)
 };
 
 Value *parse_value(std::string *str);
@@ -43,14 +80,12 @@ Value *parse_array(std::string *str) {
         char c = first_char(str);
         switch (c) {
         case '{':
-            printf("array value %d:\n", res->ary.size());
-            res->ary.push_back(parse_object(str));
+            res->SetArray(parse_object(str));
             break;
         case ',':
             break;
         case '"':
-            printf("array value %d:\n", res->ary.size());
-            res->ary.push_back(parse_string(str));
+            res->SetArray(parse_string(str));
             break;
         case ']':
             return res;
@@ -72,20 +107,16 @@ Value *parse_object(std::string *str) {
         char c = first_char(str);
         switch (c) {
         case '{':
-            parse_object(str);
-            break;
         case '[':
-            parse_array(str);
+            puts("maybe mistake");
             break;
         case ':':
-            printf("key: %s,\n", key.c_str());
-            res->obj = std::map<std::string, Value *>();
-            res->obj.insert(std::make_pair(key, parse_value(str)));
+            res->SetObject(key, parse_value(str));
             break;
         case ',':
             key = "";
             break;
-        case '"':
+        case '"': // begin or end of key
             break;
         case '}':
             return res;
@@ -101,14 +132,13 @@ Value *parse_object(std::string *str) {
 }
 
 Value *parse_string(std::string *str) {
-    Value *res = new Value();
-    remove(str);
-    while ((*str)[0] != '"') {
-        res->str += (*str)[0];
-        (*str).erase(str->begin());
+    std::string val;
+    char c;
+    while ((c = first_char(str)) != '"') {
+        val += c;
     }
-    printf("string value: %s\n", res->str.c_str());
-    (*str).erase(str->begin());
+    Value *res = new Value();
+    res->SetString(val);
     return res;
 }
 
