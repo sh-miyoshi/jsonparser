@@ -1,22 +1,23 @@
 #include <map>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <vector>
-#include <stdlib.h>
 
-union json {
+class Value {
+  public:
     std::string str;
-    std::map<std::string, union json *> obj;
-    std::vector<union json *> ary;
+    std::map<std::string, Value *> obj;
+    std::vector<Value *> ary;
 
-    json(){}
-    ~json(){}
+    Value() {}
+    ~Value() {}
 };
 
-union json *parse_value(std::string *str);
-union json *parse_array(std::string *str);
-union json *parse_object(std::string *str);
-union json *parse_string(std::string *str);
+Value *parse_value(std::string *str);
+Value *parse_array(std::string *str);
+Value *parse_object(std::string *str);
+Value *parse_string(std::string *str);
 
 void remove(std::string *str) {
     while ((*str)[0] == ' ' || (*str)[0] == '\n' || (*str)[0] == '\t' || (*str)[0] == '\r') {
@@ -26,7 +27,7 @@ void remove(std::string *str) {
 
 char first_char(std::string *str) {
     remove(str);
-    if(str->empty()){
+    if (str->empty()) {
         // TODO(set json parse error)
         puts("failed to parse json in first_char");
         exit(1);
@@ -36,7 +37,7 @@ char first_char(std::string *str) {
     return res;
 }
 
-union json *parse_array(std::string *str) {
+Value *parse_array(std::string *str) {
     int index = 0;
     while (!str->empty()) {
         char c = first_char(str);
@@ -66,8 +67,8 @@ union json *parse_array(std::string *str) {
     return nullptr;
 }
 
-union json *parse_object(std::string *str) {
-    union json *res=new union json();
+Value *parse_object(std::string *str) {
+    Value *res = new Value();
     std::string key;
     while (!str->empty()) {
         char c = first_char(str);
@@ -80,7 +81,7 @@ union json *parse_object(std::string *str) {
             break;
         case ':':
             printf("key: %s,\n", key.c_str());
-            res->obj=std::map<std::string, union json *>();
+            res->obj = std::map<std::string, Value *>();
             res->obj.insert(std::make_pair(key, parse_value(str)));
             break;
         case ',':
@@ -101,8 +102,8 @@ union json *parse_object(std::string *str) {
     return nullptr;
 }
 
-union json *parse_string(std::string *str) {
-    union json *res = new union json();
+Value *parse_string(std::string *str) {
+    Value *res = new Value();
     remove(str);
     while ((*str)[0] != '"') {
         res->str += (*str)[0];
@@ -113,8 +114,9 @@ union json *parse_string(std::string *str) {
     return res;
 }
 
-union json *parse_value(std::string *str) {
+Value *parse_value(std::string *str) {
     char c = first_char(str);
+    printf("val: %c\n", c);
     switch (c) {
     case '{':
         return parse_object(str);
@@ -140,6 +142,6 @@ int main() {
     fclose(fp);
 
     //puts(input.c_str());
-    union json result; 
+    Value result;
     parse_value(&input);
 }
