@@ -188,9 +188,8 @@ void print(Value data) {
             print(*it->second);
             if (i < size - 1) {
                 printf(",");
-            } else {
-                i++;
             }
+                i++;
         }
         std::cout << "}";
         break;
