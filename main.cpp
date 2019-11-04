@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 class Value {
   public:
@@ -17,15 +18,15 @@ class Value {
   private:
     Type type;
     std::string str;
-    std::map<std::string, Value *> obj;
-    std::vector<Value *> ary;
+    std::map<std::string, std::shared_ptr<Value>> obj;
+    std::vector<std::shared_ptr<Value>> ary;
 
   public:
     Value() : type(eTYPE_NULL) {}
     ~Value() {}
 
     // Setter
-    void SetObject(std::string key, Value *value) {
+    void SetObject(std::string key, std::shared_ptr<Value>value) {
         if (type == eTYPE_NULL || type == eTYPE_OBJECT) {
             type = eTYPE_OBJECT;
             obj.insert(std::make_pair(key, value));
@@ -33,7 +34,7 @@ class Value {
             // TODO(set error)
         }
     }
-    void SetArray(Value *value) {
+    void SetArray(std::shared_ptr<Value>value) {
         if (type == eTYPE_NULL || type == eTYPE_ARRAY) {
             type = eTYPE_ARRAY;
             ary.push_back(value);
@@ -59,20 +60,20 @@ class Value {
         // TODO(check type)
         return str;
     }
-    std::map<std::string, Value *> GetObject() {
+    std::map<std::string, std::shared_ptr<Value>> GetObject() {
         // TODO(check type)
         return obj;
     }
-    std::vector<Value *> GetArray() {
+    std::vector<std::shared_ptr<Value>> GetArray() {
         // TODO(check type)
         return ary;
     }
 };
 
-Value *parse_value(std::string *str);
-Value *parse_array(std::string *str);
-Value *parse_object(std::string *str);
-Value *parse_string(std::string *str);
+std::shared_ptr<Value> parse_value(std::string *str);
+std::shared_ptr<Value> parse_array(std::string *str);
+std::shared_ptr<Value> parse_object(std::string *str);
+std::shared_ptr<Value> parse_string(std::string *str);
 
 void remove(std::string *str) {
     while ((*str)[0] == ' ' || (*str)[0] == '\n' || (*str)[0] == '\t' || (*str)[0] == '\r') {
@@ -92,8 +93,8 @@ char first_char(std::string *str) {
     return res;
 }
 
-Value *parse_array(std::string *str) {
-    Value *res = new Value();
+std::shared_ptr<Value> parse_array(std::string *str) {
+    std::shared_ptr<Value> res = std::shared_ptr<Value>(new Value());
     while (!str->empty()) {
         char c = first_char(str);
         switch (c) {
@@ -118,8 +119,8 @@ Value *parse_array(std::string *str) {
     return nullptr;
 }
 
-Value *parse_object(std::string *str) {
-    Value *res = new Value();
+std::shared_ptr<Value> parse_object(std::string *str) {
+    std::shared_ptr<Value> res = std::shared_ptr<Value>(new Value());
     std::string key;
     while (!str->empty()) {
         char c = first_char(str);
@@ -149,18 +150,18 @@ Value *parse_object(std::string *str) {
     return nullptr;
 }
 
-Value *parse_string(std::string *str) {
+std::shared_ptr<Value> parse_string(std::string *str) {
     std::string val;
     char c;
     while ((c = first_char(str)) != '"') {
         val += c;
     }
-    Value *res = new Value();
+    std::shared_ptr<Value> res = std::shared_ptr<Value>(new Value());
     res->SetString(val);
     return res;
 }
 
-Value *parse_value(std::string *str) {
+std::shared_ptr<Value> parse_value(std::string *str) {
     char c = first_char(str);
     switch (c) {
     case '{':
@@ -234,7 +235,7 @@ int main() {
     //puts(input.c_str());
 
     // Parse JSON data
-    Value *result = parse_value(&input);
+    std::shared_ptr<Value>result = parse_value(&input);
 
     print(*result);
     puts("");
