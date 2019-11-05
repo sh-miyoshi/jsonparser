@@ -2,7 +2,8 @@
 
 ## Overview
 
-This is a library to parse JSON for C++.
+This is a library to parse JSON for C++.  
+Currently, Work In Progress...
 
 ## Usage
 
