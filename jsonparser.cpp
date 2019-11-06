@@ -39,18 +39,3 @@ Error Value::SetString(std::string value){
     }
     return Error();// return success
 }
-
-Value::Type Value::GetType() const {
-    return type;
-}
-std::string Value::GetString(){
-    return str;
-}
-
-std::map<std::string, std::shared_ptr<Value>> Value::GetObject(){
-    return obj;
-}
-
-std::vector<std::shared_ptr<Value>> Value::GetArray(){
-    return ary;
-}

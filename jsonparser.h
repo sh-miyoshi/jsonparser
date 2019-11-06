@@ -41,10 +41,10 @@ class Value {
     Error SetString(std::string value);
 
     // Getter
-    Type GetType() const;
-    std::string GetString();
-    std::map<std::string, std::shared_ptr<Value>> GetObject();
-    std::vector<std::shared_ptr<Value>> GetArray();
+    Type GetType() const { return type; }
+    std::string GetString() const { return str; }
+    std::map<std::string, std::shared_ptr<Value>> GetObject() const { return obj; }
+    std::vector<std::shared_ptr<Value>> GetArray() const { return ary; }
     // TODO(Get(), ["key"], [index])
 };
 
