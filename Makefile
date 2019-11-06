@@ -5,7 +5,7 @@ else
   TARGET = a.out
 endif
 CXXFLAGS = -O2
-SRCS = main.cpp
+SRCS = main.cpp jsonparser.cpp
 OBJS := $(SRCS:.cpp=.o)
 
 $(TARGET): $(OBJS)
@@ -14,3 +14,5 @@ clean:
 	rm -f $(TARGET) $(OBJS)
 
 # Header Dependencies
+main.o: jsonparser.h
+jsonparser.o: jsonparser.h

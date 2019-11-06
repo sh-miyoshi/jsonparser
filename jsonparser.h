@@ -41,7 +41,7 @@ class Value {
     Error SetString(std::string value);
 
     // Getter
-    Type GetType();
+    Type GetType() const;
     std::string GetString();
     std::map<std::string, std::shared_ptr<Value>> GetObject();
     std::vector<std::shared_ptr<Value>> GetArray();

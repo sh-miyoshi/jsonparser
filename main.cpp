@@ -1,79 +1,12 @@
 #include <iostream>
-#include <map>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
-#include <vector>
-#include <memory>
+#include "jsonparser.h"
 
-class Value {
-  public:
-    enum Type {
-        eTYPE_NULL,
-        eTYPE_STRING,
-        eTYPE_OBJECT,
-        eTYPE_ARRAY
-    };
-
-  private:
-    Type type;
-    std::string str;
-    std::map<std::string, std::shared_ptr<Value>> obj;
-    std::vector<std::shared_ptr<Value>> ary;
-
-  public:
-    Value() : type(eTYPE_NULL) {}
-    ~Value() {}
-
-    // Setter
-    void SetObject(std::string key, std::shared_ptr<Value>value) {
-        if (type == eTYPE_NULL || type == eTYPE_OBJECT) {
-            type = eTYPE_OBJECT;
-            obj.insert(std::make_pair(key, value));
-        } else {
-            // TODO(set error)
-        }
-    }
-    void SetArray(std::shared_ptr<Value>value) {
-        if (type == eTYPE_NULL || type == eTYPE_ARRAY) {
-            type = eTYPE_ARRAY;
-            ary.push_back(value);
-        } else {
-            // TODO(set error)
-        }
-    }
-    void SetString(std::string value) {
-        if (type == eTYPE_NULL) {
-            type = eTYPE_STRING;
-            str = value;
-        } else {
-            // TODO(set error)
-        }
-    }
-
-    // Getter
-    Type GetType() const {
-        return type;
-    }
-
-    std::string GetString() {
-        // TODO(check type)
-        return str;
-    }
-    std::map<std::string, std::shared_ptr<Value>> GetObject() {
-        // TODO(check type)
-        return obj;
-    }
-    std::vector<std::shared_ptr<Value>> GetArray() {
-        // TODO(check type)
-        return ary;
-    }
-};
-
-std::shared_ptr<Value> parse_value(std::string *str);
-std::shared_ptr<Value> parse_array(std::string *str);
-std::shared_ptr<Value> parse_object(std::string *str);
-std::shared_ptr<Value> parse_string(std::string *str);
+std::shared_ptr<json::Value> parse_value(std::string *str);
+std::shared_ptr<json::Value> parse_array(std::string *str);
+std::shared_ptr<json::Value> parse_object(std::string *str);
+std::shared_ptr<json::Value> parse_string(std::string *str);
 
 void remove(std::string *str) {
     while ((*str)[0] == ' ' || (*str)[0] == '\n' || (*str)[0] == '\t' || (*str)[0] == '\r') {
@@ -93,8 +26,8 @@ char first_char(std::string *str) {
     return res;
 }
 
-std::shared_ptr<Value> parse_array(std::string *str) {
-    std::shared_ptr<Value> res = std::shared_ptr<Value>(new Value());
+std::shared_ptr<json::Value> parse_array(std::string *str) {
+    std::shared_ptr<json::Value> res = std::shared_ptr<json::Value>(new json::Value());
     while (!str->empty()) {
         char c = first_char(str);
         switch (c) {
@@ -119,8 +52,8 @@ std::shared_ptr<Value> parse_array(std::string *str) {
     return nullptr;
 }
 
-std::shared_ptr<Value> parse_object(std::string *str) {
-    std::shared_ptr<Value> res = std::shared_ptr<Value>(new Value());
+std::shared_ptr<json::Value> parse_object(std::string *str) {
+    std::shared_ptr<json::Value> res = std::shared_ptr<json::Value>(new json::Value());
     std::string key;
     while (!str->empty()) {
         char c = first_char(str);
@@ -150,18 +83,18 @@ std::shared_ptr<Value> parse_object(std::string *str) {
     return nullptr;
 }
 
-std::shared_ptr<Value> parse_string(std::string *str) {
+std::shared_ptr<json::Value> parse_string(std::string *str) {
     std::string val;
     char c;
     while ((c = first_char(str)) != '"') {
         val += c;
     }
-    std::shared_ptr<Value> res = std::shared_ptr<Value>(new Value());
+    std::shared_ptr<json::Value> res = std::shared_ptr<json::Value>(new json::Value());
     res->SetString(val);
     return res;
 }
 
-std::shared_ptr<Value> parse_value(std::string *str) {
+std::shared_ptr<json::Value> parse_value(std::string *str) {
     char c = first_char(str);
     switch (c) {
     case '{':
@@ -178,9 +111,9 @@ std::shared_ptr<Value> parse_value(std::string *str) {
     }
 }
 
-void print(Value data) {
+void print(json::Value data) {
     switch (data.GetType()) {
-    case Value::eTYPE_OBJECT: {
+    case json::Value::eTYPE_OBJECT: {
         std::cout << "{";
         auto obj = data.GetObject();
         unsigned int i = 0, size = obj.size();
@@ -195,7 +128,7 @@ void print(Value data) {
         std::cout << "}";
         break;
     }
-    case Value::eTYPE_ARRAY: {
+    case json::Value::eTYPE_ARRAY: {
         auto ary = data.GetArray();
         unsigned int size = ary.size();
         std::cout << "[";
@@ -212,7 +145,7 @@ void print(Value data) {
         std::cout << "]";
         break;
     }
-    case Value::eTYPE_STRING:
+    case json::Value::eTYPE_STRING:
         std::cout << "\"" << data.GetString() << "\"";
         break;
     default:
@@ -235,7 +168,7 @@ int main() {
     //puts(input.c_str());
 
     // Parse JSON data
-    std::shared_ptr<Value>result = parse_value(&input);
+    std::shared_ptr<json::Value>result = parse_value(&input);
 
     print(*result);
     puts("");
