@@ -18,6 +18,8 @@ make
 - split files from main.cpp
 - correspond to Shift-JIS
 - add test
+- add other JSON type(number, null, boolean)
+- correspond escape sequence
 - add useful method
 
   ```c++
