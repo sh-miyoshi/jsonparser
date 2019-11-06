@@ -6,6 +6,16 @@
 #include <vector>
 
 namespace json {
+
+class Error {
+  public:
+    bool success;
+    std::string message;
+
+    Error() : success(true) {}
+    ~Error() {}
+};
+
 class Value {
   public:
     enum Type {
@@ -26,9 +36,9 @@ class Value {
     ~Value() {}
 
     // Setter
-    void SetObject(std::string key, std::shared_ptr<Value> value);
-    void SetArray(std::shared_ptr<Value> value);
-    void SetString(std::string value);
+    Error SetObject(std::string key, std::shared_ptr<Value> value);
+    Error SetArray(std::shared_ptr<Value> value);
+    Error SetString(std::string value);
 
     // Getter
     Type GetType();
@@ -41,6 +51,7 @@ class Value {
 class Parser {
     std::string data;
     std::shared_ptr<Value> result;
+    Error err;
 
     void Remove();
     char FirstChar();
@@ -53,8 +64,8 @@ class Parser {
     Parser() {}
     ~Parser() {}
 
-    void ParseFile(std::string fileName); // TODO(return error)
-    void ParseString(std::string str);
+    Error ParseFile(std::string fileName);
+    Error ParseString(std::string str);
     void Print();
     std::shared_ptr<Value> Get();
 };
