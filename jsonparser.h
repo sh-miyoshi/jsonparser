@@ -21,6 +21,9 @@ class Value {
         eTYPE_STRING,
         eTYPE_OBJECT,
         eTYPE_ARRAY
+
+        // TODO((+,-,E,e,.)number, boolean, null)
+        // number == double 26, 3.14, 6.62607e-34, ...
     };
 
   private:
