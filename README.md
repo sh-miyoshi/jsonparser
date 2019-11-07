@@ -1,5 +1,7 @@
 # [WIP] JSON parser
 
+![Actions Status](https://github.com/actions/jsonparser/workflows/.github/workflows/main.yml/badge.svg)
+
 ## Overview
 
 This is a library to parse JSON for C++.  
@@ -18,10 +20,3 @@ make
 - add test
 - add other JSON type(number, null, boolean)
 - correspond escape sequence
-- add useful method
-  - Example
-
-  ```c++
-  json = Parse(data)
-  str = json["key"][0].get()
-  ```
