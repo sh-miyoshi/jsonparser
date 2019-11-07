@@ -1,7 +1,7 @@
+#include "jsonparser.h"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
-#include "jsonparser.h"
 
 int main() {
     // Read JSON File
@@ -18,7 +18,7 @@ int main() {
     json::Parser parser;
     json::Error err = parser.ParseString(input);
     // TODO(error handling)
-    std::shared_ptr<json::Value> result = parser.Get();
+    json::Value result = parser.Get();
 
     parser.Print();
     puts("");

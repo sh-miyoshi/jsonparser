@@ -1,65 +1,65 @@
-#include <iostream>
 #include "jsonparser.h"
+#include <iostream>
 using namespace json;
 
-Error Value::SetObject(std::string key, std::shared_ptr<Value> value){
+Error Value::SetObject(std::string key, Value value) {
     if (type == eTYPE_NULL || type == eTYPE_OBJECT) {
         type = eTYPE_OBJECT;
         obj.insert(std::make_pair(key, value));
     } else {
         Error err;
-        err.success=false;
-        err.message="Failed to set object due to unexpected type";
+        err.success = false;
+        err.message = "Failed to set object due to unexpected type";
         return err;
     }
-    return Error();// return success
+    return Error(); // return success
 }
 
-Error Value::SetArray(std::shared_ptr<Value> value){
+Error Value::SetArray(Value value) {
     if (type == eTYPE_NULL || type == eTYPE_ARRAY) {
         type = eTYPE_ARRAY;
         ary.push_back(value);
     } else {
         Error err;
-        err.success=false;
-        err.message="Failed to set array due to unexpected type";
+        err.success = false;
+        err.message = "Failed to set array due to unexpected type";
         return err;
     }
-    return Error();// return success
+    return Error(); // return success
 }
 
-Error Value::SetString(std::string value){
+Error Value::SetString(std::string value) {
     if (type == eTYPE_NULL) {
         type = eTYPE_STRING;
         str = value;
     } else {
         Error err;
-        err.success=false;
-        err.message="Failed to set string due to unexpected type";
+        err.success = false;
+        err.message = "Failed to set string due to unexpected type";
         return err;
     }
-    return Error();// return success
+    return Error(); // return success
 }
 
-void Parser::Remove(){
+void Parser::Remove() {
     while (!data.empty() && (data[0] == ' ' || data[0] == '\n' || data[0] == '\t' || data[0] == '\r')) {
         data.erase(data.begin());
     }
 }
 
-char Parser::FirstChar(){
+char Parser::FirstChar() {
     Remove();
     if (data.empty()) {
-        this->err.success=false;
-        this->err.message="failed to parse json in first_char";
-        return ' ';// return dummy data
+        this->err.success = false;
+        this->err.message = "failed to parse json in first_char";
+        return ' '; // return dummy data
     }
     char res = data[0];
-    data.erase(data.begin());// remove read value
+    data.erase(data.begin()); // remove read value
     return res;
 }
 
-std::shared_ptr<Value> Parser::ParseValue(){
+Value Parser::ParseValue() {
     char c = FirstChar();
     switch (c) {
     case '{':
@@ -69,52 +69,52 @@ std::shared_ptr<Value> Parser::ParseValue(){
     case '[':
         return ParseArray();
     default:
-        this->err.success=false;
-        this->err.message="Failed to parse value: find unexpected charactor";
-        return std::shared_ptr<json::Value>(new json::Value());
+        this->err.success = false;
+        this->err.message = "Failed to parse value: find unexpected charactor";
+        return Value();
     }
 }
 
-std::shared_ptr<Value> Parser::ParseArray(){
-    std::shared_ptr<json::Value> res = std::shared_ptr<json::Value>(new json::Value());
+Value Parser::ParseArray() {
+    Value res;
     while (!data.empty()) {
         char c = FirstChar();
         switch (c) {
         case '{':
-            res->SetArray(ParseObject());
+            res.SetArray(ParseObject());
             break;
         case ',':
             break;
         case '"':
-            res->SetArray(ParseString());
+            res.SetArray(ParseString());
             break;
         case ']':
             return res;
         default:
-            this->err.success=false;
-            this->err.message="Failed to parse array: find unexpected charactor";
+            this->err.success = false;
+            this->err.message = "Failed to parse array: find unexpected charactor";
             return res;
         }
     }
 
-    this->err.success=false;
-    this->err.message="Failed to parse array: got EOF before closing array";
+    this->err.success = false;
+    this->err.message = "Failed to parse array: got EOF before closing array";
     return res;
 }
 
-std::shared_ptr<Value> Parser::ParseObject(){
-    std::shared_ptr<json::Value> res = std::shared_ptr<json::Value>(new json::Value());
+Value Parser::ParseObject() {
+    Value res;
     std::string key;
     while (!data.empty()) {
         char c = FirstChar();
         switch (c) {
         case '{':
         case '[':
-            this->err.success=false;
-            this->err.message="Failed to parse object: find unexpected charactor";
+            this->err.success = false;
+            this->err.message = "Failed to parse object: find unexpected charactor";
             return res;
         case ':':
-            res->SetObject(key, ParseValue());
+            res.SetObject(key, ParseValue());
             break;
         case ',':
             key = "";
@@ -129,23 +129,23 @@ std::shared_ptr<Value> Parser::ParseObject(){
         }
     }
 
-    this->err.success=false;
-    this->err.message="Failed to parse object: got EOF before closing object";
+    this->err.success = false;
+    this->err.message = "Failed to parse object: got EOF before closing object";
     return res;
 }
 
-std::shared_ptr<Value> Parser::ParseString(){
+Value Parser::ParseString() {
     std::string val;
     char c;
     while ((c = FirstChar()) != '"') {
         val += c;
     }
-    std::shared_ptr<json::Value> res = std::shared_ptr<json::Value>(new json::Value());
-    res->SetString(val);
+    Value res;
+    res.SetString(val);
     return res;
 }
 
-Error Parser::Print(Value data){
+Error Parser::Print(Value data) {
     switch (data.GetType()) {
     case Value::eTYPE_OBJECT: {
         std::cout << "{";
@@ -153,11 +153,11 @@ Error Parser::Print(Value data){
         unsigned int i = 0, size = obj.size();
         for (auto it = obj.begin(); it != obj.end(); it++) {
             std::cout << "\"" << it->first << "\":";
-            Print(*it->second);
+            Print(it->second);
             if (i < size - 1) {
-                std::cout<<",";
+                std::cout << ",";
             }
-                i++;
+            i++;
         }
         std::cout << "}";
         break;
@@ -168,12 +168,12 @@ Error Parser::Print(Value data){
         std::cout << "[";
         if (size > 1) {
             for (unsigned int i = 0; i < size - 1; i++) {
-                Print(*ary[i]);
-                std::cout<<",";
+                Print(ary[i]);
+                std::cout << ",";
             }
         }
         if (size > 0) {
-            Print(*ary[size - 1]);
+            Print(ary[size - 1]);
         }
 
         std::cout << "]";
@@ -190,21 +190,21 @@ Error Parser::Print(Value data){
     return err;
 }
 
-Error Parser::ParseFile(std::string fileName){
+Error Parser::ParseFile(std::string fileName) {
     // TODO(not implemented yet)
     return err;
 }
 
-Error Parser::ParseString(std::string str){
+Error Parser::ParseString(std::string str) {
     this->data = str;
     this->result = ParseValue();
     return err;
 }
 
-Error Parser::Print(){
-    return Print(*result);
+Error Parser::Print() {
+    return Print(result);
 }
 
-std::shared_ptr<Value> Parser::Get(){
+Value Parser::Get() {
     return result;
 }
