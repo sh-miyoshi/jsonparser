@@ -59,6 +59,7 @@ class Parser {
     std::shared_ptr<Value> ParseArray();
     std::shared_ptr<Value> ParseObject();
     std::shared_ptr<Value> ParseString();
+    Error Print(Value data);
 
   public:
     Parser() {}
@@ -66,7 +67,7 @@ class Parser {
 
     Error ParseFile(std::string fileName);
     Error ParseString(std::string str);
-    void Print();
+    Error Print();
     std::shared_ptr<Value> Get();
 };
 }; // namespace json

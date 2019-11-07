@@ -3,159 +3,6 @@
 #include <stdlib.h>
 #include "jsonparser.h"
 
-std::shared_ptr<json::Value> parse_value(std::string *str);
-std::shared_ptr<json::Value> parse_array(std::string *str);
-std::shared_ptr<json::Value> parse_object(std::string *str);
-std::shared_ptr<json::Value> parse_string(std::string *str);
-
-void remove(std::string *str) {
-    while ((*str)[0] == ' ' || (*str)[0] == '\n' || (*str)[0] == '\t' || (*str)[0] == '\r') {
-        (*str).erase(str->begin());
-    }
-}
-
-char first_char(std::string *str) {
-    remove(str);
-    if (str->empty()) {
-        // TODO(set json parse error)
-        puts("failed to parse json in first_char");
-        exit(1);
-    }
-    char res = (*str)[0];
-    (*str).erase(str->begin());
-    return res;
-}
-
-std::shared_ptr<json::Value> parse_array(std::string *str) {
-    std::shared_ptr<json::Value> res = std::shared_ptr<json::Value>(new json::Value());
-    while (!str->empty()) {
-        char c = first_char(str);
-        switch (c) {
-        case '{':
-            res->SetArray(parse_object(str));
-            break;
-        case ',':
-            break;
-        case '"':
-            res->SetArray(parse_string(str));
-            break;
-        case ']':
-            return res;
-        default:
-            puts("maybe mistake");
-            break;
-        }
-    }
-    // TODO(set json parse error)
-    puts("failed to parse json in parse_array");
-    exit(1);
-    return nullptr;
-}
-
-std::shared_ptr<json::Value> parse_object(std::string *str) {
-    std::shared_ptr<json::Value> res = std::shared_ptr<json::Value>(new json::Value());
-    std::string key;
-    while (!str->empty()) {
-        char c = first_char(str);
-        switch (c) {
-        case '{':
-        case '[':
-            puts("maybe mistake");
-            break;
-        case ':':
-            res->SetObject(key, parse_value(str));
-            break;
-        case ',':
-            key = "";
-            break;
-        case '"': // begin or end of key
-            break;
-        case '}':
-            return res;
-        default:
-            key += c;
-            break;
-        }
-    }
-    // TODO(set json parse error)
-    puts("failed to parse json in parse_object");
-    exit(1);
-    return nullptr;
-}
-
-std::shared_ptr<json::Value> parse_string(std::string *str) {
-    std::string val;
-    char c;
-    while ((c = first_char(str)) != '"') {
-        val += c;
-    }
-    std::shared_ptr<json::Value> res = std::shared_ptr<json::Value>(new json::Value());
-    res->SetString(val);
-    return res;
-}
-
-std::shared_ptr<json::Value> parse_value(std::string *str) {
-    char c = first_char(str);
-    switch (c) {
-    case '{':
-        return parse_object(str);
-    case '"':
-        return parse_string(str);
-    case '[':
-        return parse_array(str);
-    default:
-        // TODO(set json parse error)
-        puts("failed to parse json in parse_value");
-        exit(1);
-        return nullptr;
-    }
-}
-
-void print(json::Value data) {
-    switch (data.GetType()) {
-    case json::Value::eTYPE_OBJECT: {
-        std::cout << "{";
-        auto obj = data.GetObject();
-        unsigned int i = 0, size = obj.size();
-        for (auto it = obj.begin(); it != obj.end(); it++) {
-            std::cout << "\"" << it->first << "\":";
-            print(*it->second);
-            if (i < size - 1) {
-                printf(",");
-            }
-                i++;
-        }
-        std::cout << "}";
-        break;
-    }
-    case json::Value::eTYPE_ARRAY: {
-        auto ary = data.GetArray();
-        unsigned int size = ary.size();
-        std::cout << "[";
-        if (size > 1) {
-            for (unsigned int i = 0; i < size - 1; i++) {
-                print(*ary[i]);
-                printf(",");
-            }
-        }
-        if (size > 0) {
-            print(*ary[size - 1]);
-        }
-
-        std::cout << "]";
-        break;
-    }
-    case json::Value::eTYPE_STRING:
-        std::cout << "\"" << data.GetString() << "\"";
-        break;
-    default:
-        // TODO(set error or not implemented)
-        printf("failed to unknown value type: %d\n", data.GetType());
-        exit(1);
-        break;
-    }
-}
-
 int main() {
     // Read JSON File
     std::string input;
@@ -168,9 +15,12 @@ int main() {
     //puts(input.c_str());
 
     // Parse JSON data
-    std::shared_ptr<json::Value>result = parse_value(&input);
+    json::Parser parser;
+    json::Error err = parser.ParseString(input);
+    // TODO(error handling)
+    std::shared_ptr<json::Value> result = parser.Get();
 
-    print(*result);
+    parser.Print();
     puts("");
     //std::cout<<result->GetObject()["projects"]->GetArray()[1]->GetObject()["projectID"]->GetString()<<std::endl;
 }
