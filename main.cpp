@@ -21,6 +21,6 @@ int main() {
     json::Value result = parser.Get();
 
     parser.Print();
+    //std::cout << result["projects"][1]["projectID"].Get() << std::endl;
     puts("");
-    //std::cout<<result->GetObject()["projects"]->GetArray()[1]->GetObject()["projectID"]->GetString()<<std::endl;
 }

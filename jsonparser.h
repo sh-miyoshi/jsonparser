@@ -43,7 +43,10 @@ class Value {
     std::string GetString() const { return str; }
     std::map<std::string, Value> GetObject() const { return obj; }
     std::vector<Value> GetArray() const { return ary; }
-    // TODO(Get(), ["key"], [index])
+
+    std::string Get() const { return str; }
+    Value &operator[](int index) { return ary[index]; }
+    Value &operator[](std::string key) { return obj[key]; }
 };
 
 class Parser {
@@ -68,4 +71,4 @@ class Parser {
     Error Print();
     Value Get();
 };
-};
+}; // namespace json
