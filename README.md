@@ -1,6 +1,6 @@
 # [WIP] JSON parser
 
-![Actions Status](https://github.com/actions/jsonparser/workflows/.github/workflows/main.yml/badge.svg)
+![Actions Status](https://github.com/sh-miyoshi/jsonparser/workflows/C/C++%20CI/badge.svg)
 
 ## Overview
 
