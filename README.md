@@ -20,4 +20,4 @@ make
 - add more test case
 - add other JSON type(number, null)
 - correspond escape sequence
-- 
+- update error messages
