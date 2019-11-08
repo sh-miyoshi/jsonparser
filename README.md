@@ -17,6 +17,6 @@ make
 ## TODO List
 
 - correspond to Shift-JIS
-- add test
-- add other JSON type(number, null, boolean)
+- add more test case
+- add other JSON type(number, null)
 - correspond escape sequence

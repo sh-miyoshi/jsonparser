@@ -1,38 +1,40 @@
 {
-    "projects": [
-      {
-        "projectID": "d32abf77-1af5-4a4b-9456-8e5e124d6b0f",
-        "projectName": "project-1",
-        "info": {
-          "createdAt": "2019/10/28",
-          "users": [
-            {
-              "id": "aa60d70a-5a5a-4ac6-a457-57f456535c5d",
-              "name": "admin"
-            },
-            {
-              "id": "16afbeef-c14b-48e1-b341-b7202512b7f3",
-              "name": "user1"
-            }
-          ]
-        }
-      },
-      {
-        "projectID": "86a497dc-1b7c-44ec-9a6d-e0503295da88",
-        "projectName": "project-2",
-        "info": {
-          "createdAt": "2019/10/28",
-          "users": [
-            { 
-              "id": "179aa039-d05c-4474-946f-b72b8b83c1ae",
-              "name": "admin"
-            },
-            {
-              "id": "eb38c37b-8620-461e-aef9-9b6933c41bfe",
-              "name": "user2"
-            }
-          ]
-        }
+  "projects": [
+    {
+      "enable": true,
+      "projectID": "d32abf77-1af5-4a4b-9456-8e5e124d6b0f",
+      "projectName": "project-1",
+      "info": {
+        "createdAt": "2019/10/28",
+        "users": [
+          {
+            "id": "aa60d70a-5a5a-4ac6-a457-57f456535c5d",
+            "name": "admin"
+          },
+          {
+            "id": "16afbeef-c14b-48e1-b341-b7202512b7f3",
+            "name": "user1"
+          }
+        ]
       }
-    ]
-  }
+    },
+    {
+      "enable": false,
+      "projectID": "86a497dc-1b7c-44ec-9a6d-e0503295da88",
+      "projectName": "project-2",
+      "info": {
+        "createdAt": "2019/10/28",
+        "users": [
+          {
+            "id": "179aa039-d05c-4474-946f-b72b8b83c1ae",
+            "name": "admin"
+          },
+          {
+            "id": "eb38c37b-8620-461e-aef9-9b6933c41bfe",
+            "name": "user2"
+          }
+        ]
+      }
+    }
+  ]
+}

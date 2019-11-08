@@ -41,6 +41,19 @@ Error Value::SetString(std::string value) {
     return Error(); // return success
 }
 
+Error Value::SetBool(bool value){
+    if (type == eTYPE_NULL) {
+        type = eTYPE_BOOL;
+        boolean = value;
+    } else {
+        Error err;
+        err.success = false;
+        err.message = "Failed to set bool due to unexpected type";
+        return err;
+    }
+    return Error(); // return success
+}
+
 void Parser::Remove() {
     while (!data.empty() && (data[0] == ' ' || data[0] == '\n' || data[0] == '\t' || data[0] == '\r')) {
         data.erase(data.begin());
@@ -68,6 +81,10 @@ Value Parser::ParseValue() {
         return ParseString();
     case '[':
         return ParseArray();
+    case 't':
+        return ParseBool(true, "rue");// rue = "true" - 't'
+    case 'f':
+        return ParseBool(false, "alse");// alse = "false" - 'f'
     default:
         this->err.success = false;
         this->err.message = "Failed to parse value: find unexpected charactor";
@@ -145,6 +162,21 @@ Value Parser::ParseString() {
     return res;
 }
 
+Value Parser::ParseBool(bool setValue, std::string expect) {
+    Value res;
+    std::string t;
+    for(unsigned int i=0;i<expect.length();i++){
+        t += FirstChar();
+    }
+    if( t == expect){
+        res.SetBool(setValue);
+    }else{
+        this->err.success = false;
+        this->err.message = "Failed to parse bool: cannot get true or false";
+    }
+    return res;
+}
+
 Error Parser::Print(Value data) {
     switch (data.GetType()) {
     case Value::eTYPE_OBJECT: {
@@ -182,6 +214,11 @@ Error Parser::Print(Value data) {
     case Value::eTYPE_STRING:
         std::cout << "\"" << data.GetString() << "\"";
         break;
+    case Value::eTYPE_BOOL:{
+        std::string output = data.GetBool() ? "true" : "false";
+        std::cout << output;
+        break;
+    }
     default:
         err.success = false;
         err.message = "Failed to print JSON: got unknown value type";
