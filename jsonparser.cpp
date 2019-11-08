@@ -191,8 +191,14 @@ Error Parser::Print(Value data) {
 }
 
 Error Parser::ParseFile(std::string fileName) {
-    // TODO(not implemented yet)
-    return err;
+    std::string input;
+    FILE *fp = fopen(fileName.c_str(), "r");
+    int ch;
+    while ((ch = fgetc(fp)) != EOF) {
+        input += (char)ch;
+    }
+    fclose(fp);
+    return ParseString(input);
 }
 
 Error Parser::ParseString(std::string str) {
