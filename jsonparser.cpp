@@ -41,7 +41,7 @@ Error Value::SetString(std::string value) {
     return Error(); // return success
 }
 
-Error Value::SetBool(bool value){
+Error Value::SetBool(bool value) {
     if (type == eTYPE_NULL) {
         type = eTYPE_BOOL;
         boolean = value;
@@ -49,6 +49,19 @@ Error Value::SetBool(bool value){
         Error err;
         err.success = false;
         err.message = "Failed to set bool due to unexpected type";
+        return err;
+    }
+    return Error(); // return success
+}
+
+Error Value::SetNumber(double value) {
+    if (type == eTYPE_NULL) {
+        type = eTYPE_NUMBER;
+        number = value;
+    } else {
+        Error err;
+        err.success = false;
+        err.message = "Failed to set number due to unexpected type";
         return err;
     }
     return Error(); // return success
@@ -82,9 +95,22 @@ Value Parser::ParseValue() {
     case '[':
         return ParseArray();
     case 't':
-        return ParseBool(true, "rue");// rue = "true" - 't'
+        return ParseBool(true, "rue"); // rue = "true" - 't'
     case 'f':
-        return ParseBool(false, "alse");// alse = "false" - 'f'
+        return ParseBool(false, "alse"); // alse = "false" - 'f'
+    case '+':
+    case '-':
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+        return ParseNumber(c);
     default:
         this->err.success = false;
         this->err.message = "Failed to parse value: find unexpected charactor";
@@ -165,15 +191,28 @@ Value Parser::ParseString() {
 Value Parser::ParseBool(bool setValue, std::string expect) {
     Value res;
     std::string t;
-    for(unsigned int i=0;i<expect.length();i++){
+    for (unsigned int i = 0; i < expect.length(); i++) {
         t += FirstChar();
     }
-    if( t == expect){
+    if (t == expect) {
         res.SetBool(setValue);
-    }else{
+    } else {
         this->err.success = false;
         this->err.message = "Failed to parse bool: cannot get true or false";
     }
+
+    return res;
+}
+
+Value Parser::ParseNumber(char firstVal) {
+    Value res;
+    std::string value;
+    value += firstVal;
+    while (!data.empty() && IsNumber(this->data[0])) {
+        value += this->data[0];
+        this->data.erase(this->data.begin()); // remove read value
+    }
+    res.SetNumber(std::stod(value));
     return res;
 }
 
@@ -214,11 +253,14 @@ Error Parser::Print(Value data) {
     case Value::eTYPE_STRING:
         std::cout << "\"" << data.GetString() << "\"";
         break;
-    case Value::eTYPE_BOOL:{
+    case Value::eTYPE_BOOL: {
         std::string output = data.GetBool() ? "true" : "false";
         std::cout << output;
         break;
     }
+    case Value::eTYPE_NUMBER:
+        std::cout << data.GetNumber();
+        break;
     default:
         err.success = false;
         err.message = "Failed to print JSON: got unknown value type";
@@ -250,4 +292,15 @@ Error Parser::Print() {
 
 Value Parser::Get() {
     return result;
+}
+
+bool Parser::IsNumber(char c) {
+    // return true when c is in numberData
+    const std::string numberData = "0123456789+-.eE";
+    for (auto n : numberData) {
+        if (n == c) {
+            return true;
+        }
+    }
+    return false;
 }

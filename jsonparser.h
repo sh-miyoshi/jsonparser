@@ -22,20 +22,21 @@ class Value {
         eTYPE_OBJECT,
         eTYPE_ARRAY,
         eTYPE_BOOL,
+        eTYPE_NUMBER,
 
-        // TODO((+,-,E,e,.)number, boolean, null)
-        // number == double 26, 3.14, 6.62607e-34, ...
+        // TODO(null)
     };
 
   private:
     Type type;
     bool boolean;
+    double number;
     std::string str;
     std::map<std::string, Value> obj;
     std::vector<Value> ary;
 
   public:
-    Value() : type(eTYPE_NULL),boolean(false) {}
+    Value() : type(eTYPE_NULL), boolean(false) {}
     ~Value() {}
 
     // Setter
@@ -43,10 +44,12 @@ class Value {
     Error SetArray(Value value);
     Error SetString(std::string value);
     Error SetBool(bool value);
+    Error SetNumber(double value);
 
     // Getter
     Type GetType() const { return type; }
     bool GetBool() const { return boolean; }
+    double GetNumber() const { return number; }
     std::string GetString() const { return str; }
     std::map<std::string, Value> GetObject() const { return obj; }
     std::vector<Value> GetArray() const { return ary; }
@@ -68,7 +71,9 @@ class Parser {
     Value ParseObject();
     Value ParseString();
     Value ParseBool(bool setValue, std::string expect);
+    Value ParseNumber(char firstVal);
     Error Print(Value data);
+    bool IsNumber(char c);
 
   public:
     Parser() {}

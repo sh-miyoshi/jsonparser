@@ -9,11 +9,13 @@
         "users": [
           {
             "id": "aa60d70a-5a5a-4ac6-a457-57f456535c5d",
-            "name": "admin"
+            "name": "admin",
+            "score": 135649
           },
           {
             "id": "16afbeef-c14b-48e1-b341-b7202512b7f3",
-            "name": "user1"
+            "name": "user1",
+            "score": 0.953
           }
         ]
       }
@@ -27,11 +29,13 @@
         "users": [
           {
             "id": "179aa039-d05c-4474-946f-b72b8b83c1ae",
-            "name": "admin"
+            "name": "admin",
+            "score": 52.5
           },
           {
             "id": "eb38c37b-8620-461e-aef9-9b6933c41bfe",
-            "name": "user2"
+            "name": "user2",
+            "score": 6.62607e-34
           }
         ]
       }
