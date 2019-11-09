@@ -54,7 +54,6 @@ class Value {
     std::map<std::string, Value> GetObject() const { return obj; }
     std::vector<Value> GetArray() const { return ary; }
 
-    std::string Get() const { return str; }
     Value &operator[](int index) { return ary[index]; }
     Value &operator[](std::string key) { return obj[key]; }
 };
