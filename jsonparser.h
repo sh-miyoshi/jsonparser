@@ -71,7 +71,7 @@ class Parser {
     Value ParseString();
     Value ParseBool(bool setValue, std::string expect);
     Value ParseNumber(char firstVal);
-    Error Print(Value data);
+    Error Print(Value data, std::string indent);
     bool IsNumber(char c);
 
   public:

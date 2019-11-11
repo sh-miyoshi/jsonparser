@@ -2,6 +2,10 @@
 #include <iostream>
 using namespace json;
 
+namespace{
+    const std::string INDENT = "  ";
+};
+
 Error Value::SetObject(std::string key, Value value) {
     if (type == eTYPE_NULL || type == eTYPE_OBJECT) {
         type = eTYPE_OBJECT;
@@ -216,17 +220,20 @@ Value Parser::ParseNumber(char firstVal) {
     return res;
 }
 
-Error Parser::Print(Value data) {
+Error Parser::Print(Value data, std::string indent) {
     switch (data.GetType()) {
     case Value::eTYPE_OBJECT: {
-        std::cout << "{";
+        indent += INDENT;
+        std::cout << "{\n" << indent;
         auto obj = data.GetObject();
         unsigned int i = 0, size = obj.size();
         for (auto it = obj.begin(); it != obj.end(); it++) {
-            std::cout << "\"" << it->first << "\":";
-            Print(it->second);
+            std::cout << "\"" << it->first << "\": ";
+            Print(it->second, indent);
             if (i < size - 1) {
-                std::cout << ",";
+                std::cout << ",\n" << indent;
+            } else {
+                std::cout << "\n" << indent;
             }
             i++;
         }
@@ -236,18 +243,20 @@ Error Parser::Print(Value data) {
     case Value::eTYPE_ARRAY: {
         auto ary = data.GetArray();
         unsigned int size = ary.size();
-        std::cout << "[";
+        indent += INDENT;
+        std::cout << "[\n" << indent;
         if (size > 1) {
             for (unsigned int i = 0; i < size - 1; i++) {
-                Print(ary[i]);
-                std::cout << ",";
+                Print(ary[i], indent);
+                std::cout << ",\n" << indent;
             }
         }
         if (size > 0) {
-            Print(ary[size - 1]);
+            Print(ary[size - 1], indent);
+            std::cout << "\n" << indent;
         }
 
-        std::cout << "]";
+        std::cout << "]" << indent;
         break;
     }
     case Value::eTYPE_STRING:
@@ -287,7 +296,7 @@ Error Parser::ParseString(std::string str) {
 }
 
 Error Parser::Print() {
-    return Print(result);
+    return Print(result, "");
 }
 
 Value Parser::Get() {
