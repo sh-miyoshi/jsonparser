@@ -233,7 +233,7 @@ Error Parser::Print(Value data, std::string indent) {
             if (i < size - 1) {
                 std::cout << ",\n" << indent;
             } else {
-                std::cout << "\n" << indent;
+                std::cout << "\n" << GetPrevIndent(indent);
             }
             i++;
         }
@@ -253,7 +253,7 @@ Error Parser::Print(Value data, std::string indent) {
         }
         if (size > 0) {
             Print(ary[size - 1], indent);
-            std::cout << "\n" << indent;
+            std::cout << "\n" << GetPrevIndent(indent);
         }
 
         std::cout << "]" << indent;
@@ -312,4 +312,16 @@ bool Parser::IsNumber(char c) {
         }
     }
     return false;
+}
+
+std::string Parser::GetPrevIndent(std::string indent){
+    for(unsigned int i=0;i<INDENT.size();i++){
+        if(indent[0]==INDENT[i]){
+            indent.erase(indent.begin());
+        }else{
+            // indent include unexpected charactor
+            exit(1);
+        }
+    }
+    return indent;
 }

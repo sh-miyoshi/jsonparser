@@ -73,6 +73,7 @@ class Parser {
     Value ParseNumber(char firstVal);
     Error Print(Value data, std::string indent);
     bool IsNumber(char c);
+    std::string GetPrevIndent(std::string indent);
 
   public:
     Parser() {}
