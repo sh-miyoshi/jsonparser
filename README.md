@@ -39,6 +39,5 @@ TODO(more examples are in ./examples)
 
 - correspond to Shift-JIS
 - add more test case
-- add other JSON type(null)
 - correspond escape sequence
 - update error messages
