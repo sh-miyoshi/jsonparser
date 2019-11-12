@@ -17,14 +17,13 @@ class Error {
 class Value {
   public:
     enum Type {
-        eTYPE_NULL,
+        eTYPE_NONE,
         eTYPE_STRING,
         eTYPE_OBJECT,
         eTYPE_ARRAY,
         eTYPE_BOOL,
         eTYPE_NUMBER,
-
-        // TODO(null)
+        eTYPE_NULL
     };
 
   private:
@@ -34,9 +33,10 @@ class Value {
     std::string str;
     std::map<std::string, Value> obj;
     std::vector<Value> ary;
+    bool isNull;
 
   public:
-    Value() : type(eTYPE_NULL), boolean(false) {}
+    Value() : type(eTYPE_NONE), boolean(false), isNull(false), number(0) {}
     ~Value() {}
 
     // Setter
@@ -45,6 +45,7 @@ class Value {
     Error SetString(std::string value);
     Error SetBool(bool value);
     Error SetNumber(double value);
+    Error SetNull();
 
     // Getter
     Type GetType() const { return type; }
@@ -71,6 +72,7 @@ class Parser {
     Value ParseString();
     Value ParseBool(bool setValue, std::string expect);
     Value ParseNumber(char firstVal);
+    Value ParseNull();
     Error Print(Value data, std::string indent);
     bool IsNumber(char c);
     std::string GetPrevIndent(std::string indent);

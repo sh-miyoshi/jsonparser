@@ -18,7 +18,7 @@ int GetSJISByteSize(char str){
 */
 
 Error Value::SetObject(std::string key, Value value) {
-    if (type == eTYPE_NULL || type == eTYPE_OBJECT) {
+    if (type == eTYPE_NONE || type == eTYPE_OBJECT) {
         type = eTYPE_OBJECT;
         obj.insert(std::make_pair(key, value));
     } else {
@@ -31,7 +31,7 @@ Error Value::SetObject(std::string key, Value value) {
 }
 
 Error Value::SetArray(Value value) {
-    if (type == eTYPE_NULL || type == eTYPE_ARRAY) {
+    if (type == eTYPE_NONE || type == eTYPE_ARRAY) {
         type = eTYPE_ARRAY;
         ary.push_back(value);
     } else {
@@ -44,7 +44,7 @@ Error Value::SetArray(Value value) {
 }
 
 Error Value::SetString(std::string value) {
-    if (type == eTYPE_NULL) {
+    if (type == eTYPE_NONE) {
         type = eTYPE_STRING;
         str = value;
     } else {
@@ -57,7 +57,7 @@ Error Value::SetString(std::string value) {
 }
 
 Error Value::SetBool(bool value) {
-    if (type == eTYPE_NULL) {
+    if (type == eTYPE_NONE) {
         type = eTYPE_BOOL;
         boolean = value;
     } else {
@@ -70,13 +70,26 @@ Error Value::SetBool(bool value) {
 }
 
 Error Value::SetNumber(double value) {
-    if (type == eTYPE_NULL) {
+    if (type == eTYPE_NONE) {
         type = eTYPE_NUMBER;
         number = value;
     } else {
         Error err;
         err.success = false;
         err.message = "Failed to set number due to unexpected type";
+        return err;
+    }
+    return Error(); // return success
+}
+
+Error Value::SetNull() {
+    if (type == eTYPE_NONE) {
+        type = eTYPE_NULL;
+        isNull = true;
+    } else {
+        Error err;
+        err.success = false;
+        err.message = "Failed to set null due to unexpected type";
         return err;
     }
     return Error(); // return success
@@ -113,6 +126,8 @@ Value Parser::ParseValue() {
         return ParseBool(true, "rue"); // rue = "true" - 't'
     case 'f':
         return ParseBool(false, "alse"); // alse = "false" - 'f'
+    case 'n':
+        return ParseNull();
     case '+':
     case '-':
     case '0':
@@ -231,6 +246,23 @@ Value Parser::ParseNumber(char firstVal) {
     return res;
 }
 
+Value Parser::ParseNull() {
+    Value res;
+    std::string t;
+    const std::string expect = "ull"; // ull = "null" - 'n'
+    for (unsigned int i = 0; i < expect.length(); i++) {
+        t += FirstChar();
+    }
+    if (t == expect) {
+        res.SetNull();
+    } else {
+        this->err.success = false;
+        this->err.message = "Failed to parse null: got unexpected charactor";
+    }
+
+    return res;
+}
+
 Error Parser::Print(Value data, std::string indent) {
     switch (data.GetType()) {
     case Value::eTYPE_OBJECT: {
@@ -286,6 +318,9 @@ Error Parser::Print(Value data, std::string indent) {
     }
     case Value::eTYPE_NUMBER:
         std::cout << data.GetNumber();
+        break;
+    case Value::eTYPE_NULL:
+        std::cout << "null";
         break;
     default:
         err.success = false;
