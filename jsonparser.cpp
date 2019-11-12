@@ -319,7 +319,7 @@ std::string Parser::GetPrevIndent(std::string indent){
         if(indent[0]==INDENT[i]){
             indent.erase(indent.begin());
         }else{
-            // indent include unexpected charactor
+            std::cerr << "Program Error: indent include unexpected charactor" << std::endl;
             exit(1);
         }
     }
