@@ -3,8 +3,6 @@
 tmp1=$(mktemp)
 tmp2=$(mktemp)
 
-make
-
 cat sample.json | jq -S . >> $tmp1
 ./a.out | jq -S . >> $tmp2
 df=`diff $tmp1 $tmp2`

@@ -2,9 +2,20 @@
 #include <iostream>
 using namespace json;
 
-namespace{
-    const std::string INDENT = "  ";
+namespace {
+const std::string INDENT = "  ";
 };
+
+/*
+TODO(SJIS method)
+int GetSJISByteSize(char str){
+	unsigned char bstr = ( unsigned char ) str;
+	if( ( 0x81 <= bstr&&bstr <= 0x9f ) || ( 0xE0 <= bstr&&bstr <= 0xff ) ){
+		return 2;// full width
+	} else
+		return 1;// half width
+}
+*/
 
 Error Value::SetObject(std::string key, Value value) {
     if (type == eTYPE_NULL || type == eTYPE_OBJECT) {
@@ -224,16 +235,19 @@ Error Parser::Print(Value data, std::string indent) {
     switch (data.GetType()) {
     case Value::eTYPE_OBJECT: {
         indent += INDENT;
-        std::cout << "{\n" << indent;
+        std::cout << "{\n"
+                  << indent;
         auto obj = data.GetObject();
         unsigned int i = 0, size = obj.size();
         for (auto it = obj.begin(); it != obj.end(); it++) {
             std::cout << "\"" << it->first << "\": ";
             Print(it->second, indent);
             if (i < size - 1) {
-                std::cout << ",\n" << indent;
+                std::cout << ",\n"
+                          << indent;
             } else {
-                std::cout << "\n" << GetPrevIndent(indent);
+                std::cout << "\n"
+                          << GetPrevIndent(indent);
             }
             i++;
         }
@@ -244,16 +258,19 @@ Error Parser::Print(Value data, std::string indent) {
         auto ary = data.GetArray();
         unsigned int size = ary.size();
         indent += INDENT;
-        std::cout << "[\n" << indent;
+        std::cout << "[\n"
+                  << indent;
         if (size > 1) {
             for (unsigned int i = 0; i < size - 1; i++) {
                 Print(ary[i], indent);
-                std::cout << ",\n" << indent;
+                std::cout << ",\n"
+                          << indent;
             }
         }
         if (size > 0) {
             Print(ary[size - 1], indent);
-            std::cout << "\n" << GetPrevIndent(indent);
+            std::cout << "\n"
+                      << GetPrevIndent(indent);
         }
 
         std::cout << "]" << indent;
@@ -314,11 +331,11 @@ bool Parser::IsNumber(char c) {
     return false;
 }
 
-std::string Parser::GetPrevIndent(std::string indent){
-    for(unsigned int i=0;i<INDENT.size();i++){
-        if(indent[0]==INDENT[i]){
+std::string Parser::GetPrevIndent(std::string indent) {
+    for (unsigned int i = 0; i < INDENT.size(); i++) {
+        if (indent[0] == INDENT[i]) {
             indent.erase(indent.begin());
-        }else{
+        } else {
             std::cerr << "Program Error: indent include unexpected charactor" << std::endl;
             exit(1);
         }
