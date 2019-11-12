@@ -12,5 +12,5 @@ jobs:
     - name: build
       run: make
     - name: test
-      run: ./run_test.sh
+      run: ./test/run_test.sh
 

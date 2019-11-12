@@ -9,7 +9,7 @@ This is a library to parse JSON for C++.
 ## Usage
 
 1. copy jsonparser.cpp and jsonparser.h to your project
-2. user in your project like this
+2. use in your project like this
 
 ```c++
 #include "jsonparser.h"
