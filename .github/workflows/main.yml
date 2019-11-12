@@ -10,7 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: build
-      run: make
+      run: |
+        cd test
+        make
     - name: test
       run: ./test/run_test.sh
 
